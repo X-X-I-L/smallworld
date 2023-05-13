@@ -4,17 +4,12 @@ import fetch from "node-fetch";
 import { CardInfo, YpdCardInfoRoot, YpdCardInfoVersionRoot } from "./cardTypes";
 import git from "isomorphic-git";
 import http from "isomorphic-git/http/node/index.js";
-
-const DATA_PATH = "_data/CardInfo.json";
-const MAPPING_PATH = "_data/NameMapping.json";
-const VERSION_PATH = "_data/DbVer.json";
-
-const REMOTE_DATA_PATH = new URL(
-  "https://db.ygoprodeck.com/api/v7/cardinfo.php"
-);
-const REMOTE_VERSION_PATH = new URL(
-  "https://db.ygoprodeck.com/api/v7/checkDBVer.php"
-);
+import {
+  CARDINFO_PATH,
+  VERSION_PATH,
+  REMOTE_CARDINFO_PATH,
+  REMOTE_VERSION_PATH,
+} from "./constants";
 
 let currentVersion;
 try {
@@ -49,7 +44,7 @@ if (currentVersion === remoteVersion || +currentVersion >= +remoteVersion) {
 let cardInfoResponse: YpdCardInfoRoot;
 try {
   cardInfoResponse = (await (
-    await fetch(REMOTE_DATA_PATH)
+    await fetch(REMOTE_CARDINFO_PATH)
   ).json()) as YpdCardInfoRoot;
 } catch (e: any) {
   console.log(`couldn't fetch YGOProDeck card info\n${e.message}`);
@@ -73,23 +68,13 @@ cardInfoResponse.data
     };
   });
 
-let nameToIdMap: { [name: string]: string } = {};
-Object.entries(cardInfo).forEach(([key, val]) => {
-  nameToIdMap[val.name] = key;
-});
-
 console.log("saving to file.");
-await Promise.all([
-  writeFile(DATA_PATH, JSON.stringify(cardInfo), "utf-8"),
-  writeFile(MAPPING_PATH, JSON.stringify(nameToIdMap), "utf-8"),
-]);
-
+await writeFile(CARDINFO_PATH, JSON.stringify(cardInfo), "utf-8");
 // leave version update as last thing
 await writeFile(VERSION_PATH, JSON.stringify(versionResponse), "utf-8");
 
 await Promise.all([
-  git.add({ fs, dir: ".", filepath: DATA_PATH }),
-  git.add({ fs, dir: ".", filepath: MAPPING_PATH }),
+  git.add({ fs, dir: ".", filepath: CARDINFO_PATH }),
   git.add({ fs, dir: ".", filepath: VERSION_PATH }),
 ]);
 
