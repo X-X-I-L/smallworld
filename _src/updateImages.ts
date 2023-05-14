@@ -16,8 +16,8 @@ export async function updateImages() {
   }
 
   const limiter = new Bottleneck({
-    reservoir: 18,
-    reservoirRefreshAmount: 18,
+    reservoir: 9,
+    reservoirRefreshAmount: 9,
     reservoirRefreshInterval: 1000,
   });
 
