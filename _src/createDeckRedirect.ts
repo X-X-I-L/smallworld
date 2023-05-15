@@ -40,23 +40,30 @@ async function createDeckRedirect(deckPath: string) {
 
   const htmlDir = decklistFilename.replaceAll("_", "/");
   await mkdir(htmlDir, { recursive: true });
-  const htmlPath = Path.join(htmlDir, "index.html");
+  const indexPath = Path.join(htmlDir, "index.html");
+  const rootRelativePath = decklistFilename
+    .split("_")
+    .reduce((accumulator, _val) => {
+      return accumulator + "../"; //traverse up 1 directory for each word
+    }, "");
   await writeFile(
-    htmlPath,
+    indexPath,
     `<!DOCTYPE html>
 <html>
   <head>
     <title>${decklistFilename} network</title>
-    <meta http-equiv="refresh" content="0; url='/?${decklistParams.toString()}'" />
+    <meta http-equiv="refresh" content="0; url='${rootRelativePath}?${decklistParams.toString()}'" />
+    <link rel="stylesheet" href="${rootRelativePath}_css/style.css" />
+    <link rel="icon" href="${rootRelativePath}favicon.ico" />
   </head>
   <body>
-    <p>Redirecting to network viewer...</p>
+    <p id="redirect-text">Redirecting to network viewer...</p>
   </body>
 </html>`,
     "utf-8"
   );
 
-  console.log(`wrote to ${htmlPath}`);
+  console.log(`wrote to ${indexPath}`);
 }
 
 if (esMain(import.meta)) {

@@ -17,6 +17,7 @@ html,
 body {
   margin: 0px;
   height: 100%;
+  background-color: var(--ayu-bg);
 }
 
 #container {
@@ -44,7 +45,8 @@ body {
   background-color: var(--ayu-selection-normal);
   border-radius: 0.4em;
 }
-#add-card-picker {
+#add-card-picker,
+#redirect-text {
   font-size: 3.4em;
   font-family: monospace;
   color: var(--ayu-fg);
