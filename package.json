@@ -6,7 +6,8 @@
   "scripts": {
     "develop": "webpack watch --mode development",
     "build": "webpack --mode production",
-    "updateCardInfo": "ts-node --esm _src/updateCardInfo.ts"
+    "updateCardInfo": "ts-node --esm _src/updateCardInfo.ts",
+    "generateDeckPage": "ts-node --esm _src/createDeckRedirect.ts"
   },
   "keywords": [],
   "author": "",
@@ -26,7 +27,8 @@
     "typescript": "^5.0.4",
     "webpack": "^5.82.1",
     "webpack-cli": "^5.1.1",
-    "webpack-dev-server": "^4.15.0"
+    "webpack-dev-server": "^4.15.0",
+    "yaml": "^2.2.2"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.4.0",

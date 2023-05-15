@@ -3,6 +3,7 @@ import "@fortawesome/fontawesome-free/js/fontawesome";
 import "@fortawesome/fontawesome-free/js/solid";
 import cardInfo from "../_data/CardInfo.json";
 import { CardInfo, CardNode } from "./cardTypes.js";
+import { capitalize } from "./helpers.js";
 
 const ci = cardInfo as CardInfo;
 
@@ -21,10 +22,6 @@ const comparisonTypes = {
   atk: { color: "#ff7074" },
   def: { color: "#6a9fee" },
 };
-function capitalize(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
 function buildNetwork() {
   let ids = new URLSearchParams(window.location.search).getAll("id");
 
@@ -76,6 +73,14 @@ function buildNetwork() {
   };
 }
 
+function setupTitle() {
+  let searchParams = new URLSearchParams(window.location.search);
+  let title = searchParams.get("title");
+  if (title) {
+    document.title = title;
+  }
+}
+
 function setupCardPicker() {
   let datalist = document.getElementById("card-choices");
   let nameMap: { [name: string]: string } = {};
@@ -124,6 +129,7 @@ function setupCardPicker() {
     ev.preventDefault();
     if (!currentCardTextIsValid()) return;
     let searchParams = new URLSearchParams(window.location.search);
+    searchParams.delete("title");
     searchParams.append("id", nameMap[cardPicker.value]);
     window.location.search = searchParams.toString();
   };
@@ -164,6 +170,7 @@ export function main() {
     },
   });
 
+  setupTitle();
   setupCardPicker();
   setupResetButton();
 }
