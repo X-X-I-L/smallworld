@@ -9,6 +9,12 @@
     "updateCardInfo": "ts-node --esm _src/updateCardInfo.ts",
     "generateDeckPage": "ts-node --esm _src/createDeckRedirect.ts"
   },
+  "scriptComments":{
+    "develop": "Runs local development build of the webapp, needs to be paired with a live server to serve it",
+    "build": "Builds a js bundle that can be committed and pushed up to GH pages since this is a nonsensical monorepo",
+    "updateCardInfo": "Usage: npm run updateCardInfo -- <force update: true/false>     \nupdates the card info json and downloads associated card images, intended for use by GH Actions, and will use the provided token to commit said changes",
+    "generateDeckPage": "Usage: npm run generateDeckPage -- _decks/<deck list>.yml     \ngenerates a webpage with a redirect to the webapp viewer for a provided deck in a directory structure based on the filename. Deck input is expected to be a flat YAML array and not plaintext because I like being able to use the IDE to comment out lines🤣"   
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
