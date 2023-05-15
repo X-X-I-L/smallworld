@@ -1,5 +1,6 @@
-// auto-generated from their respective endpoints
+import { Node } from "vis-network";
 
+// auto-generated from their respective endpoint JSONs
 export interface YpdCardInfoRoot {
   data: YpdCard[];
 }
@@ -77,9 +78,4 @@ export interface CardInfoEntry {
   level: number;
 }
 
-export interface CardNode extends CardInfoEntry {
-  image: string;
-  shape: string;
-  id: string;
-  title: string;
-}
+export interface CardNode extends CardInfoEntry, Omit<Node, "level"> {}

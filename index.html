@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>𝚂𝚖𝚊𝚕𝚕 𝚆𝚘𝚛𝚕𝚍 network graph viewer</title>
+    <link rel="stylesheet" href="_css/style.css" />
+    <link rel="icon" href="_images/misc/favicon.ico" />
+  </head>
+  <body>
+    <div id="container">
+      <div id="mynetwork"></div>
+      <form id="add-card-form">
+        <input
+          list="card-choices"
+          id="add-card-picker"
+          name="add-card-picker"
+          placeholder="+ Add a card to the network"
+          size="25"
+          autocomplete="off"
+        /><button type="submit" id="add-card-submit">
+          <i class="fa-solid fa-square-plus"></i>
+        </button>
+        <datalist id="card-choices"> </datalist>
+      </form>
+    </div>
+    <button id="reset-network" title="Reset to an empty network">
+      <i class="fa-solid fa-trash-can"></i>
+    </button>
+
+    <script type="text/javascript" src="_dist/bundle.js"></script>
+  </body>
+</html>

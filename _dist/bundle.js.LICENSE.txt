@@ -1,0 +1,38 @@
+/*!
+ * Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com
+ * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+ * Copyright 2023 Fonticons, Inc.
+ */
+
+/*! Hammer.JS - v2.0.17-rc - 2019-12-16
+ * http://naver.github.io/egjs
+ *
+ * Forked By Naver egjs
+ * Copyright (c) hammerjs
+ * Licensed under the MIT license */
+
+/**
+ * vis-network
+ * https://visjs.github.io/vis-network/
+ *
+ * A dynamic, browser-based visualization library.
+ *
+ * @version 9.1.6
+ * @date    2023-03-23T21:31:19.223Z
+ *
+ * @copyright (c) 2011-2017 Almende B.V, http://almende.com
+ * @copyright (c) 2017-2019 visjs contributors, https://github.com/visjs
+ *
+ * @license
+ * vis.js is dual licensed under both
+ *
+ *   1. The Apache 2.0 License
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   and
+ *
+ *   2. The MIT License
+ *      http://opensource.org/licenses/MIT
+ *
+ * vis.js may be distributed under either license.
+ */

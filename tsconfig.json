@@ -9,7 +9,7 @@
         "esModuleInterop": true,
         "resolveJsonModule": true,
         "allowSyntheticDefaultImports": true,
-        "outDir": "_dist",
+        "outDir": "_dist/tsc",
     },
     "include": ["_src/**/*"],
 }
