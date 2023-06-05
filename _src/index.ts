@@ -4,6 +4,7 @@ import "@fortawesome/fontawesome-free/js/solid";
 import cardInfo from "../_data/CardInfo.json";
 import { CardInfo, CardNode } from "./cardTypes.js";
 import { capitalize } from "./helpers.js";
+import Awesomplete from "awesomplete";
 
 const ci = cardInfo as CardInfo;
 
@@ -82,18 +83,29 @@ function setupTitle() {
 }
 
 function setupCardPicker() {
-  let datalist = document.getElementById("card-choices");
-  let nameMap: { [name: string]: string } = {};
+  let nameList: string[] = [];
+  let nameMap: { [name: string]: { id: string; popRank: number } } = {};
   Object.entries(ci).forEach(([id, card]) => {
-    let option = document.createElement("option");
-    option.value = card.name;
-    datalist!.append(option);
-    nameMap[card.name] = id;
+    nameList.push(card.name);
+    nameMap[card.name] = { id: id, popRank: card.popRank };
   });
+
+  console.log(nameList);
 
   let cardPicker = document.getElementById(
     "add-card-picker"
   ) as HTMLInputElement;
+  let awesompleter = new Awesomplete(cardPicker, {
+    list: nameList,
+    sort: (a, b) => {
+      return nameMap[a.toString()].popRank - nameMap[b.toString()].popRank;
+    },
+    minChars: 0,
+  });
+
+  cardPicker.onfocus = (_ev) => {
+    awesompleter.evaluate();
+  };
 
   function currentCardTextIsValid() {
     return cardPicker.value.length > 0 && cardPicker.value in nameMap;
@@ -121,18 +133,28 @@ function setupCardPicker() {
         : Math.max(6, cardPicker.value.length)
     }ch`;
   }
+
+  function onCardPickerSubmit(ev: Event) {
+    if (!currentCardTextIsValid()) return;
+    let searchParams = new URLSearchParams(window.location.search);
+    searchParams.delete("title");
+    searchParams.append("id", nameMap[cardPicker.value].id);
+    window.location.search = searchParams.toString();
+  }
+
   cardPicker!.oninput = onCardPickerInput;
   onCardPickerInput(new CustomEvent("initialize"));
 
   let cardForm = document.getElementById("add-card-form") as HTMLFormElement;
-  cardForm!.onsubmit = (ev) => {
+  cardForm!.onsubmit = (ev: Event) => {
     ev.preventDefault();
     if (!currentCardTextIsValid()) return;
     let searchParams = new URLSearchParams(window.location.search);
     searchParams.delete("title");
-    searchParams.append("id", nameMap[cardPicker.value]);
+    searchParams.append("id", nameMap[cardPicker.value].id);
     window.location.search = searchParams.toString();
   };
+  cardForm.addEventListener("awesomplete-selectcomplete", onCardPickerSubmit);
 }
 
 function setupResetButton() {

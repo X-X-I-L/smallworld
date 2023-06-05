@@ -1,19 +1,19 @@
 {
   "name": "smallworld",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "develop": "webpack watch --mode development",
-    "build": "webpack --mode production",
+    "develop": "set NODE_ENV=develop && webpack watch --mode development",
+    "build": "set NODE_ENV=production && webpack --mode production",
     "updateCardInfo": "ts-node --esm _src/updateCardInfo.ts",
     "generateDeckPage": "ts-node --esm _src/createDeckRedirect.ts"
   },
-  "scriptComments":{
+  "scriptComments": {
     "develop": "Runs local development build of the webapp, needs to be paired with a live server to serve it",
     "build": "Builds a js bundle that can be committed and pushed up to GH pages since this is a nonsensical monorepo",
-    "updateCardInfo": "Usage: npm run updateCardInfo -- <force update: true/false>     \nupdates the card info json and downloads associated card images, intended for use by GH Actions, and will use the provided token to commit said changes",
-    "generateDeckPage": "Usage: npm run generateDeckPage -- _decks/<deck list>.yml     \ngenerates a webpage with a redirect to the webapp viewer for a provided deck in a directory structure based on the filename. Deck input is expected to be a flat YAML array and not plaintext because I like being able to use the IDE to comment out lines🤣"   
+    "updateCardInfo": "Usage: npm run updateCardInfo     \nupdates the card info json and downloads associated card images, intended for use by GH Actions, and will use the provided token to commit said changes",
+    "generateDeckPage": "Usage: npm run generateDeckPage -- _decks/<deck list>.yml     \ngenerates a webpage with a redirect to the webapp viewer for a provided deck in a directory structure based on the filename. Deck input is expected to be a flat YAML array and not plaintext because I like being able to use the IDE to comment out lines🤣"
   },
   "keywords": [],
   "author": "",
@@ -23,11 +23,14 @@
     "@types/node": "^20.1.3",
     "axios": "^1.4.0",
     "bottleneck": "^2.19.5",
+    "css-loader": "^6.8.1",
     "es-main": "^1.2.0",
     "fast-fuzzy": "^1.12.0",
     "isomorphic-git": "^1.23.0",
+    "mini-css-extract-plugin": "^2.7.6",
     "node-fetch": "^3.3.1",
     "sharp": "^0.32.1",
+    "style-loader": "^3.3.3",
     "ts-loader": "^9.4.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4",
@@ -38,6 +41,8 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.4.0",
+    "@types/awesomplete": "^1.1.11",
+    "awesomplete": "^1.1.5",
     "vis-network": "^9.1.6"
   }
 }

@@ -5,8 +5,11 @@
   --ayu-ui-bg: #0b0e14;
   --ayu-ui-line: #11151c;
   --ayu-selection-normal: #47526633;
+  --ayu-selection-normal-opaque: #181d26;
+  --ayu-selection-active: #47526640;
   --ayu-func: #ffb454;
   --ayu-special: #e6b673dd;
+  --ayu-operator: #f29668dd;
 }
 
 ::placeholder {
@@ -38,9 +41,10 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  margin: 0.7em;
   padding-left: 0.3em;
   padding-right: 0.3em;
+
+  margin: 0.7em;
   border: 0.15em solid var(--ayu-special);
   background-color: var(--ayu-selection-normal);
   border-radius: 0.4em;
@@ -92,4 +96,34 @@ input:focus {
 
 #reset-network:hover {
   color: var(--ayu-fg);
+}
+
+.awesomplete > ul {
+  margin: 0.7em;
+  border: 0.15em solid var(--ayu-special);
+  background: var(--ayu-selection-normal);
+  border-radius: 0.4em;
+  font-size: 1.3em;
+  font-family: monospace;
+  color: var(--ayu-fg);
+
+  min-width: max-content;
+  max-width: 75vw;
+}
+
+.awesomplete > ul:before {
+  background: var(--ayu-selection-normal-opaque);
+}
+
+.awesomplete > ul > li:hover,
+.awesomplete > ul > li[aria-selected="true"] {
+  background: var(--ayu-selection-active);
+  color: var(--ayu-fg);
+}
+
+.awesomplete mark,
+.awesomplete li:hover mark,
+.awesomplete li[aria-selected="true"] mark {
+  background: none;
+  color: inherit;
 }
