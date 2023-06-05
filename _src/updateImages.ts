@@ -29,7 +29,6 @@ export async function updateImages() {
       if (!fs.existsSync(path)) {
         await limiter.schedule(async () => {
           const remotePath = `${REMOTE_IMAGES_DIRECTORY}${id}.jpg`;
-          // console.log(remotePath);
           axios
             .get(remotePath, {
               responseType: "arraybuffer",

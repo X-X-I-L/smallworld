@@ -1,65 +1,26 @@
 import { readFile, writeFile } from "fs/promises";
 import fs from "fs";
 import axios from "axios";
-import {
-  CardInfo,
-  YpdCardInfoRoot,
-  YpdCardInfoVersionRoot,
-} from "./cardTypes.js";
+import { CardInfo, MdmCardInfoRoot, YpdCardInfoRoot } from "./cardTypes.js";
 import git from "isomorphic-git";
 import http from "isomorphic-git/http/node/index.js";
 import {
   CARDINFO_PATH,
-  VERSION_PATH,
+  MDM_CARDINFO_BASE_PATH,
+  MDM_PAGE_SIZE,
   REMOTE_CARDINFO_PATH,
-  REMOTE_VERSION_PATH,
 } from "./constants.js";
 import { updateImages } from "./updateImages.js";
 import esMain from "es-main";
+import Bottleneck from "bottleneck";
 
 export async function updateCardInfo() {
-  let currentVersion;
-  try {
-    currentVersion = (
-      JSON.parse(
-        await readFile(VERSION_PATH, "utf-8")
-      ) as YpdCardInfoVersionRoot
-    )[0].database_version;
-  } catch (e: any) {
-    console.log(`couldn't read local card info version\n${e.message}`);
-    process.exit(1);
-  }
-
-  let versionResponse;
-  let remoteVersion;
-  try {
-    versionResponse = (await axios.get(REMOTE_VERSION_PATH))
-      .data as YpdCardInfoVersionRoot;
-    remoteVersion = versionResponse[0].database_version;
-  } catch (e: any) {
-    console.log(`couldn't read YGOProDeck card info version\n${e.message}`);
-    process.exit(2);
-  }
-
-  console.log(
-    `local version: v${currentVersion}\nYGOProDeck version: v${remoteVersion}`
-  );
-  const forceUpdate = process.argv[2] === "true";
-  console.log(`force update: ${process.argv[2]} -> ${forceUpdate}`);
-  if (
-    (currentVersion === remoteVersion || +currentVersion >= +remoteVersion) &&
-    !forceUpdate
-  ) {
-    console.log("nothing to do, exiting.");
-    process.exit(0);
-  }
-
   let cardInfoResponse: YpdCardInfoRoot;
   try {
     cardInfoResponse = (await axios.get(REMOTE_CARDINFO_PATH))
       .data as YpdCardInfoRoot;
   } catch (e: any) {
-    console.log(`couldn't fetch YGOProDeck card info\n${e.message}`);
+    console.error(`couldn't fetch YGOProDeck card info\n${e.message}`);
     process.exit(3);
   }
 
@@ -74,51 +35,98 @@ export async function updateCardInfo() {
         name: card.name,
         attribute: card.attribute!,
         type: card.race,
-        atk: card.atk!,
-        def: card.def!,
+        atk: card.misc_info[0]?.question_atk ? "?" : String(card.atk!),
+        def: card.misc_info[0]?.question_def ? "?" : String(card.def!),
         level: card.level!,
+        popRank: 1e20,
       };
     });
 
-  console.log("saving to file.");
-  await writeFile(CARDINFO_PATH, JSON.stringify(cardInfo), "utf-8");
-  // leave version update as last thing
-  await writeFile(VERSION_PATH, JSON.stringify(versionResponse), "utf-8");
-
-  await Promise.all([
-    git.add({ fs, dir: ".", filepath: CARDINFO_PATH }),
-    git.add({ fs, dir: ".", filepath: VERSION_PATH }),
-  ]);
-
-  await git.commit({
-    fs,
-    dir: ".",
-    message: `Update card data to ${versionResponse[0].last_update}`,
-    author: { name: "updater", email: "no-reply@github.com" },
+  const limiter = new Bottleneck({
+    reservoir: 1,
+    reservoirRefreshAmount: 1,
+    reservoirRefreshInterval: 1000,
   });
 
-  const token = process.env.GITHUB_TOKEN;
-  console.log("pushing update to repo.");
+  let mdmCollectionCount = 0;
+  try {
+    mdmCollectionCount = (
+      await axios.get(`${MDM_CARDINFO_BASE_PATH}?collectionCount=true`)
+    ).data;
+  } catch (e: any) {
+    console.error(`couldn't fetch MDM's card count\n${e.message}`);
+    process.exit(4);
+  }
 
-  // const chars = [...token as string];
-  // chars.forEach((c, i) => console.log(`${i}: ${c}`));
-  // just printing the token gets it censored in the workflow history. neat!
+  await Promise.all(
+    Array.from(
+      { length: Math.ceil(mdmCollectionCount / MDM_PAGE_SIZE) },
+      async (_, i) => {
+        const pageId = i + 1;
+        await limiter
+          .schedule(async () => {
+            const cards = (
+              await axios.get(
+                `${MDM_CARDINFO_BASE_PATH}?limit=${MDM_PAGE_SIZE}&page=${pageId}`
+              )
+            ).data as MdmCardInfoRoot;
+            cards.forEach((card) => {
+              if (card.konamiID && card.konamiID in cardInfo) {
+                cardInfo[card.konamiID].popRank = Math.min(card.popRank, 1e20);
+              }
+            });
+            console.log(
+              `fetched MDM cards ${i * MDM_PAGE_SIZE + 1}-${Math.min(
+                (i + 1) * MDM_PAGE_SIZE,
+                mdmCollectionCount
+              )}`
+            );
+          })
+          .catch((e) => {
+            console.error(`couldn't fetch MDM page ${pageId}\n${e.message}`);
+            process.exit(5);
+          });
+      }
+    )
+  );
 
-  let pushResult = await git.push({
-    fs,
-    http,
-    dir: ".",
-    remote: "origin",
-    onAuth: () => ({ username: "github", password: token }),
-  }); // what isn't neat is the documentation for auth:
-  // https://isomorphic-git.org/docs/en/snippets#github-pages-deploy-script
-  // has the correct inputs but the wrong keys for onAuth
-  // https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
-  // is for a different kind of token, probably fine-grained access
-  // which annoyingly expire fast, pass
-  console.log(pushResult);
+  console.log("saving to file.");
+  await writeFile(CARDINFO_PATH, JSON.stringify(cardInfo), "utf-8");
 
-  await updateImages();
+  // await Promise.all([
+  //   git.add({ fs, dir: ".", filepath: CARDINFO_PATH }),
+  //   git.add({ fs, dir: ".", filepath: VERSION_PATH }),
+  // ]);
+
+  // await git.commit({
+  //   fs,
+  //   dir: ".",
+  //   message: `Update card data to ${versionResponse[0].last_update}`,
+  //   author: { name: "updater", email: "no-reply@github.com" },
+  // });
+
+  // const token = process.env.GITHUB_TOKEN;
+  // console.log("pushing update to repo.");
+
+  // // const chars = [...token as string];
+  // // chars.forEach((c, i) => console.log(`${i}: ${c}`));
+  // // just printing the token gets it censored in the workflow history. neat!
+
+  // let pushResult = await git.push({
+  //   fs,
+  //   http,
+  //   dir: ".",
+  //   remote: "origin",
+  //   onAuth: () => ({ username: "github", password: token }),
+  // }); // what isn't neat is the documentation for auth:
+  // // https://isomorphic-git.org/docs/en/snippets#github-pages-deploy-script
+  // // has the correct inputs but the wrong keys for onAuth
+  // // https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
+  // // is for a different kind of token, probably fine-grained access
+  // // which annoyingly expire fast, pass
+  // console.log(pushResult);
+
+  // await updateImages();
 }
 
 if (esMain(import.meta)) {

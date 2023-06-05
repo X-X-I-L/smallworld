@@ -5,15 +5,6 @@ name: Keep card information file updated
 
 on:
   workflow_dispatch:
-    inputs:
-      force:
-        description: 'Force update even if DB version is up to date'
-        required: true
-        type: choice
-        default: 'false'
-        options: 
-        - 'true'
-        - 'false'
   schedule:
     - cron: '0 9 * * *'
 
@@ -37,4 +28,4 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: npm run updateCardInfo -- ${{ inputs.force }}
+    - run: npm run updateCardInfo
