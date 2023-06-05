@@ -93,40 +93,37 @@ export async function updateCardInfo() {
   console.log("saving to file.");
   await writeFile(CARDINFO_PATH, JSON.stringify(cardInfo), "utf-8");
 
-  // await Promise.all([
-  //   git.add({ fs, dir: ".", filepath: CARDINFO_PATH }),
-  //   git.add({ fs, dir: ".", filepath: VERSION_PATH }),
-  // ]);
+  await git.add({ fs, dir: ".", filepath: CARDINFO_PATH });
 
-  // await git.commit({
-  //   fs,
-  //   dir: ".",
-  //   message: `Update card data to ${versionResponse[0].last_update}`,
-  //   author: { name: "updater", email: "no-reply@github.com" },
-  // });
+  await git.commit({
+    fs,
+    dir: ".",
+    message: `Update card data`,
+    author: { name: "updater", email: "no-reply@github.com" },
+  });
 
-  // const token = process.env.GITHUB_TOKEN;
-  // console.log("pushing update to repo.");
+  const token = process.env.GITHUB_TOKEN;
+  console.log("pushing update to repo.");
 
-  // // const chars = [...token as string];
-  // // chars.forEach((c, i) => console.log(`${i}: ${c}`));
-  // // just printing the token gets it censored in the workflow history. neat!
+  // const chars = [...token as string];
+  // chars.forEach((c, i) => console.log(`${i}: ${c}`));
+  // just printing the token gets it censored in the workflow history. neat!
 
-  // let pushResult = await git.push({
-  //   fs,
-  //   http,
-  //   dir: ".",
-  //   remote: "origin",
-  //   onAuth: () => ({ username: "github", password: token }),
-  // }); // what isn't neat is the documentation for auth:
-  // // https://isomorphic-git.org/docs/en/snippets#github-pages-deploy-script
-  // // has the correct inputs but the wrong keys for onAuth
-  // // https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
-  // // is for a different kind of token, probably fine-grained access
-  // // which annoyingly expire fast, pass
-  // console.log(pushResult);
+  let pushResult = await git.push({
+    fs,
+    http,
+    dir: ".",
+    remote: "origin",
+    onAuth: () => ({ username: "github", password: token }),
+  }); // what isn't neat is the documentation for auth:
+  // https://isomorphic-git.org/docs/en/snippets#github-pages-deploy-script
+  // has the correct inputs but the wrong keys for onAuth
+  // https://isomorphic-git.org/docs/en/onAuth#oauth2-tokens
+  // is for a different kind of token, probably fine-grained access
+  // which annoyingly expire fast, pass
+  console.log(pushResult);
 
-  // await updateImages();
+  await updateImages();
 }
 
 if (esMain(import.meta)) {
