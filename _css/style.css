@@ -103,7 +103,7 @@ input:focus {
   border: 0.15em solid var(--ayu-special);
   background: var(--ayu-selection-normal);
   border-radius: 0.4em;
-  font-size: 1.3em;
+  font-size: 1.7em;
   font-family: monospace;
   color: var(--ayu-fg);
 

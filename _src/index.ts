@@ -7,6 +7,7 @@ import { capitalize } from "./helpers.js";
 import Awesomplete from "awesomplete";
 
 const ci = cardInfo as CardInfo;
+let cardIds: string[] = [];
 
 const comparisonTypes = {
   //original colors used in previous script
@@ -24,9 +25,10 @@ const comparisonTypes = {
   def: { color: "#6a9fee" },
 };
 function buildNetwork() {
-  let ids = new URLSearchParams(window.location.search).getAll("id");
+  cardIds = new URLSearchParams(window.location.search).getAll("id");
+  cardIds = [...new Set(cardIds)];
 
-  let nodes = ids.map((id) => {
+  let nodes = cardIds.map((id) => {
     let card = ci[id] as CardNode;
     card.title = card.name;
     card.id = id;
@@ -90,8 +92,6 @@ function setupCardPicker() {
     nameMap[card.name] = { id: id, popRank: card.popRank };
   });
 
-  console.log(nameList);
-
   let cardPicker = document.getElementById(
     "add-card-picker"
   ) as HTMLInputElement;
@@ -101,6 +101,21 @@ function setupCardPicker() {
       return nameMap[a.toString()].popRank - nameMap[b.toString()].popRank;
     },
     minChars: 0,
+    maxItems: Math.floor(
+      window.innerHeight / parseFloat(getComputedStyle(cardPicker).fontSize)
+    ),
+    filter: (text, input) => {
+      if (
+        cardIds.includes(
+          nameMap[(text as unknown as { label: string; value: string }).value]
+            .id
+        )
+      ) {
+        return false;
+      } else {
+        return Awesomplete.FILTER_CONTAINS(text, input);
+      }
+    },
   });
 
   cardPicker.onfocus = (_ev) => {
