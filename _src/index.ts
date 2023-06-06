@@ -7,7 +7,6 @@ import { capitalize } from "./helpers.js";
 import Awesomplete from "awesomplete";
 
 const ci = cardInfo as CardInfo;
-let cardIds: string[] = [];
 
 const comparisonTypes = {
   //original colors used in previous script
@@ -24,11 +23,18 @@ const comparisonTypes = {
   atk: { color: "#ff7074" },
   def: { color: "#6a9fee" },
 };
-function buildNetwork() {
-  cardIds = new URLSearchParams(window.location.search).getAll("id");
-  cardIds = [...new Set(cardIds)];
 
+let cardIds: string[] = [];
+let windowSearchParams: URLSearchParams;
+type NetworkData = { nodes: DataSet<CardNode, "id">; edges: Edge[] };
+
+function buildNetwork(): NetworkData {
+  windowSearchParams = new URLSearchParams(window.location.search);
+  cardIds = [...new Set(windowSearchParams.getAll("id"))];
+
+  windowSearchParams.delete("id");
   let nodes = cardIds.map((id) => {
+    windowSearchParams.append("id", id);
     let card = ci[id] as CardNode;
     card.title = card.name;
     card.id = id;
@@ -71,7 +77,7 @@ function buildNetwork() {
   });
 
   return {
-    nodes: nodes,
+    nodes: new DataSet(nodes),
     edges: edges,
   };
 }
@@ -150,33 +156,74 @@ function setupCardPicker() {
   }
 
   function onCardPickerSubmit(ev: Event) {
+    ev.preventDefault();
     if (!currentCardTextIsValid()) return;
-    let searchParams = new URLSearchParams(window.location.search);
-    searchParams.delete("title");
-    searchParams.append("id", nameMap[cardPicker.value].id);
-    window.location.search = searchParams.toString();
+    windowSearchParams.delete("title");
+    windowSearchParams.append("id", nameMap[cardPicker.value].id);
+    window.location.search = windowSearchParams.toString();
   }
 
-  cardPicker!.oninput = onCardPickerInput;
+  cardPicker.oninput = onCardPickerInput;
   onCardPickerInput(new CustomEvent("initialize"));
 
   let cardForm = document.getElementById("add-card-form") as HTMLFormElement;
-  cardForm!.onsubmit = (ev: Event) => {
-    ev.preventDefault();
-    if (!currentCardTextIsValid()) return;
-    let searchParams = new URLSearchParams(window.location.search);
-    searchParams.delete("title");
-    searchParams.append("id", nameMap[cardPicker.value].id);
-    window.location.search = searchParams.toString();
-  };
+  cardForm.onsubmit = onCardPickerSubmit;
   cardForm.addEventListener("awesomplete-selectcomplete", onCardPickerSubmit);
 }
-
+const resetNetworkButton = document.getElementById(
+  "reset-network"
+) as HTMLInputElement;
 function setupResetButton() {
-  (document.getElementById("reset-network") as HTMLInputElement).onclick =
-    () => {
-      window.location.search = "";
-    };
+  resetNetworkButton.onclick = () => {
+    window.location.search = "";
+  };
+}
+
+function isHoveringResetButton() {
+  return (
+    resetNetworkButton.parentNode?.querySelector(":hover") == resetNetworkButton
+  );
+}
+
+function setupNetworkInteraction(network: Network, data: NetworkData) {
+  network.on("dragging", (params) => {
+    if (isHoveringResetButton()) {
+      data.nodes.update([
+        {
+          id: params.nodes[0],
+          color: { highlight: "#ff0000ff" },
+          opacity: 0.5,
+        },
+      ]);
+    } else {
+      data.nodes.update([
+        {
+          id: params.nodes[0],
+          color: "",
+          opacity: 1.0,
+        },
+      ]);
+    }
+  });
+  network.on("dragEnd", (params) => {
+    if (isHoveringResetButton()) {
+      windowSearchParams.delete("id");
+      cardIds.forEach((id) => {
+        if (id != params.nodes[0]) {
+          windowSearchParams.append("id", id);
+        }
+      });
+      window.location.search = windowSearchParams.toString();
+    } else {
+      data.nodes.update([
+        {
+          id: params.nodes[0],
+          color: "",
+          opacity: 1.0,
+        },
+      ]);
+    }
+  });
 }
 
 export function main() {
@@ -185,15 +232,6 @@ export function main() {
   let container = document.getElementById("mynetwork");
   var network = new Network(container as HTMLElement, data, {
     physics: {
-      // barnesHut: {
-      //   theta: 0.5,
-      //   gravitationalConstant: -500,
-      //   centralGravity: 0.3,
-      //   springLength: 95,
-      //   springConstant: 0.01,
-      //   damping: 0.09,
-      //   avoidOverlap: 0.5,
-      // },
       forceAtlas2Based: {
         theta: 0.5,
         gravitationalConstant: -50,
@@ -210,6 +248,7 @@ export function main() {
   setupTitle();
   setupCardPicker();
   setupResetButton();
+  setupNetworkInteraction(network, data);
 }
 
 main();
