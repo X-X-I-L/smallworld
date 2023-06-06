@@ -3,7 +3,11 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const devMode = process.env.NODE_ENV.trim() !== "production";
 
 module.exports = {
-  entry: ["./_src/index.ts", "awesomplete/awesomplete.css"],
+  entry: [
+    "./_src/index.ts",
+    // "./_css/style.module.scss",
+    // "~awesomplete/awesomplete.css",
+  ],
   plugins: [new MiniCssExtractPlugin({ filename: "bundle.css" })],
   module: {
     rules: [
@@ -13,8 +17,19 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
-        test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader"],
+        test: /\.(sa|sc|c)ss$/i,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: "css-loader",
+            options: {
+              modules: {
+                localIdentName: "[local]",
+              },
+            },
+          },
+          "sass-loader",
+        ],
       },
     ],
   },

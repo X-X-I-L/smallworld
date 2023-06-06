@@ -3,7 +3,6 @@
   <head>
     <title>𝚂𝚖𝚊𝚕𝚕 𝚆𝚘𝚛𝚕𝚍 network graph viewer</title>
     <link rel="stylesheet" href="_dist/bundle.css" />
-    <link rel="stylesheet" href="_css/style.css" />
     <link rel="icon" href="favicon.ico" />
   </head>
   <body>
@@ -21,8 +20,15 @@
         </button>
       </form>
     </div>
-    <button id="reset-network" title="Reset to an empty network">
+    <button
+      id="reset-network"
+      title="Remove node or reset network"
+      class="icon-button"
+    >
       <i class="fa-solid fa-trash-can"></i>
+    </button>
+    <button id="tips" title="Tips" class="icon-button">
+      <i class="fa-regular fa-circle-question"></i>
     </button>
 
     <script type="text/javascript" src="_dist/bundle.js"></script>

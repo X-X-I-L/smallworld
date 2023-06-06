@@ -1,10 +1,18 @@
 import { DataSet, Network, Edge, Node } from "vis-network/standalone";
 import "@fortawesome/fontawesome-free/js/fontawesome";
 import "@fortawesome/fontawesome-free/js/solid";
+import "@fortawesome/fontawesome-free/js/regular";
 import cardInfo from "../_data/CardInfo.json";
 import { CardInfo, CardNode } from "./cardTypes.js";
 import { capitalize } from "./helpers.js";
 import Awesomplete from "awesomplete";
+import { IdType, network } from "vis-network";
+
+import _css from "../node_modules/awesomplete/awesomplete.css";
+const __css = _css; //some BS to get the CSS loader to build this first so we can style over it with our CSS
+
+import css from "../_css/style.module.scss";
+console.log(css["ayu-bg"]);
 
 const ci = cardInfo as CardInfo;
 
@@ -94,17 +102,16 @@ let pickerSubmit = document.getElementById(
   "add-card-submit"
 ) as HTMLInputElement;
 
+let cardPicker = document.getElementById("add-card-picker") as HTMLInputElement;
+
 function setupCardPicker() {
   let nameList: string[] = [];
   let nameMap: { [name: string]: { id: string; popRank: number } } = {};
   Object.entries(ci).forEach(([id, card]) => {
     nameList.push(card.name);
-    nameMap[card.name] = { id: id, popRank: card.popRank };
+    nameMap[card.name] = { id: id, popRank: card.popRank! };
   });
 
-  let cardPicker = document.getElementById(
-    "add-card-picker"
-  ) as HTMLInputElement;
   let awesompleter = new Awesomplete(cardPicker, {
     list: nameList,
     sort: (a, b) => {
@@ -179,6 +186,41 @@ function setupResetButton() {
     window.location.search = "";
   };
 }
+const tipsButton = document.getElementById("tips") as HTMLInputElement;
+const tipsNodeId = 999999999;
+const tipsNodeColor = {
+  border: css["ayu-special"],
+  background: css["ayu-selection-active"],
+  highlight: {
+    border: css["ayu-special"],
+    background: css["ayu-selection-active"],
+  },
+};
+function setupTipsButton(data: NetworkData) {
+  tipsButton.onclick = () => {
+    // window.location.search = "";
+    data.nodes.update([
+      {
+        id: 999999999,
+        label: `Tips:
+- Changes are saved to the URL for sharing
+  -> Browser back button works as "undo"
+- Drag nodes over 🗑 to delete (including this)`,
+        name: "help",
+        shape: "box",
+        borderWidth: 3,
+        font: {
+          size: parseFloat(getComputedStyle(cardPicker).fontSize),
+          face: "monospace",
+          align: "left",
+          color: css["ayu-fg"],
+        },
+        mass: 30,
+        color: tipsNodeColor,
+      },
+    ]);
+  };
+}
 
 function isHoveringResetButton() {
   return (
@@ -187,27 +229,31 @@ function isHoveringResetButton() {
 }
 
 function setupNetworkInteraction(network: Network, data: NetworkData) {
+  function revertNode(node: IdType) {
+    data.nodes.update([
+      {
+        id: node,
+        color: node == tipsNodeId ? tipsNodeColor : "",
+        opacity: 1.0,
+      },
+    ]);
+  }
+
   network.on("dragging", (params) => {
-    if (isHoveringResetButton()) {
+    if (isHoveringResetButton() && params.nodes[0]) {
       data.nodes.update([
         {
           id: params.nodes[0],
-          color: { highlight: "#ff0000ff" },
+          color: { highlight: "#ff000044" },
           opacity: 0.5,
         },
       ]);
-    } else {
-      data.nodes.update([
-        {
-          id: params.nodes[0],
-          color: "",
-          opacity: 1.0,
-        },
-      ]);
+    } else if (params.nodes[0]) {
+      revertNode(params.nodes[0]);
     }
   });
   network.on("dragEnd", (params) => {
-    if (isHoveringResetButton()) {
+    if (isHoveringResetButton() && params.nodes[0]) {
       windowSearchParams.delete("id");
       cardIds.forEach((id) => {
         if (id != params.nodes[0]) {
@@ -215,14 +261,8 @@ function setupNetworkInteraction(network: Network, data: NetworkData) {
         }
       });
       window.location.search = windowSearchParams.toString();
-    } else {
-      data.nodes.update([
-        {
-          id: params.nodes[0],
-          color: "",
-          opacity: 1.0,
-        },
-      ]);
+    } else if (params.nodes[0]) {
+      revertNode(params.nodes[0]);
     }
   });
 }
@@ -249,6 +289,7 @@ export function main() {
   setupTitle();
   setupCardPicker();
   setupResetButton();
+  setupTipsButton(data);
   setupNetworkInteraction(network, data);
 }
 

@@ -6,11 +6,6 @@ A small webapp for viewing the network graph of ``Small World`` bridges between 
 
 `Direct link <https://x-x-i-l.github.io/smallworld/>`_ to the webapp hosted on GitHub Pages
 
-How do I *remove* cards from the graph?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-idk lol. Just edit them out of the URL manually, the IDs listed are the same as the passwords listed in the bottom left of a given card. Or navigate back through your browser history. Or implement something and shoot me a PR. Or message me that this is something actually wanted, as I personally have no need for this feature.
-
 |X X I L#0001|
 
 .. |X X I L#0001| image:: https://dcbadge.vercel.app/api/shield/91383118644154368

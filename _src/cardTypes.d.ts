@@ -131,12 +131,12 @@ export interface CardInfo {
 export interface CardInfoEntry {
   // id: number
   name: string;
-  attribute: string;
-  type: string;
-  atk: string;
-  def: string;
-  level: number;
-  popRank: number;
+  attribute?: string;
+  type?: string;
+  atk?: string;
+  def?: string;
+  level?: number;
+  popRank?: number;
 }
 
 export interface CardNode extends CardInfoEntry, Omit<Node, "level"> {}

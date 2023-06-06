@@ -1,0 +1,184 @@
+$ayu-bg: #0d1017;
+$ayu-fg: #bfbdb6;
+$ayu-comment: #acb6bf8c;
+$ayu-ui-bg: #0b0e14;
+$ayu-ui-line: #11151c;
+$ayu-selection-normal: #47526633;
+$ayu-selection-normal-opaque: #181d26;
+$ayu-selection-active: #47526640;
+$ayu-func: #ffb454;
+$ayu-special: #e6b673dd;
+$ayu-operator: #f29668dd;
+
+// I don't like this but at this point I don't care lol
+:export {
+  ayu-bg: $ayu-bg;
+  ayu-fg: $ayu-fg;
+  ayu-comment: $ayu-comment;
+  ayu-ui-bg: $ayu-ui-bg;
+  ayu-ui-line: $ayu-ui-line;
+  ayu-selection-normal: $ayu-selection-normal;
+  ayu-selection-normal-opaque: $ayu-selection-normal-opaque;
+  ayu-selection-active: $ayu-selection-active;
+  ayu-func: $ayu-func;
+  ayu-special: $ayu-special;
+  ayu-operator: $ayu-operator;
+}
+
+::placeholder {
+  color: $ayu-comment;
+  font: inherit;
+}
+
+html {
+  margin: 0px;
+  height: 100%;
+  background-color: $ayu-bg;
+}
+
+body {
+  margin: 0px;
+  height: 100%;
+  background-color: $ayu-bg;
+  background-color: $ayu-bg;
+}
+
+#container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+#mynetwork {
+  width: 100%;
+  height: 100%;
+  background-color: $ayu-bg;
+}
+
+#add-card-form {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding-left: 0.3em;
+  padding-right: 0.3em;
+  margin: 0.7em;
+  border: 0.15em solid $ayu-special;
+  background-color: $ayu-selection-normal;
+  border-radius: 0.4em;
+}
+
+#add-card-picker {
+  font-size: 3.4em;
+  font-family: monospace;
+  color: $ayu-fg;
+  width: fit-content;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0px;
+  &:focus {
+    outline: none;
+  }
+}
+
+#redirect-text {
+  font-size: 3.4em;
+  font-family: monospace;
+  color: $ayu-fg;
+  width: fit-content;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0px;
+}
+input {
+  &:focus {
+    outline: none;
+  }
+}
+
+#add-card-submit {
+  color: $ayu-fg;
+  display: none;
+  background: none;
+  border: 0;
+  margin-left: 0.1em;
+  box-shadow: none;
+  border-radius: 0px;
+  font-size: 2.65em;
+  padding: 0;
+  cursor: pointer;
+}
+
+.icon-button {
+  margin: 0.3em;
+  font-size: 6em;
+  background: none;
+  border: 0;
+  margin-left: 0.1em;
+  box-shadow: none;
+  border-radius: 0px;
+  padding: 0;
+  cursor: pointer;
+  color: $ayu-comment;
+  &:hover {
+    color: $ayu-fg;
+  }
+}
+#reset-network {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: 0.2em;
+}
+#tips {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-top: 0.1em;
+  margin-right: 0.2em;
+}
+
+.awesomplete {
+  > ul {
+    border: 0.15em solid $ayu-special;
+    background: $ayu-selection-normal;
+    border-radius: 0.4em;
+    font-size: 1.7em;
+    font-family: monospace;
+    color: $ayu-fg;
+    min-width: max-content;
+    max-width: 75vw;
+    &:before {
+      background: $ayu-selection-normal-opaque;
+    }
+    > li {
+      &:hover {
+        background: $ayu-selection-active;
+        color: $ayu-fg;
+      }
+    }
+    > li[aria-selected="true"] {
+      background: $ayu-selection-active;
+      color: $ayu-fg;
+    }
+  }
+  mark {
+    background: none;
+    color: inherit;
+  }
+  li {
+    &:hover {
+      mark {
+        background: none;
+        color: inherit;
+      }
+    }
+  }
+  li[aria-selected="true"] {
+    mark {
+      background: none;
+      color: inherit;
+    }
+  }
+}

@@ -10,6 +10,7 @@
         "resolveJsonModule": true,
         "allowSyntheticDefaultImports": true,
         "outDir": "_dist/tsc",
+        "plugins": [{ "name": "typescript-plugin-css-modules" }],
     },
     "include": ["_src/**/*"],
 }
