@@ -53,7 +53,7 @@ async function createDeckRedirect(deckPath: string) {
   <head>
     <title>${decklistFilename} network</title>
     <meta http-equiv="refresh" content="0; url='${rootRelativePath}?${decklistParams.toString()}'" />
-    <link rel="stylesheet" href="${rootRelativePath}_css/style.css" />
+    <link rel="stylesheet" href="${rootRelativePath}_dist/bundle.css" />
     <link rel="icon" href="${rootRelativePath}favicon.ico" />
   </head>
   <body>
