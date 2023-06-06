@@ -90,6 +90,10 @@ function setupTitle() {
   }
 }
 
+let pickerSubmit = document.getElementById(
+  "add-card-submit"
+) as HTMLInputElement;
+
 function setupCardPicker() {
   let nameList: string[] = [];
   let nameMap: { [name: string]: { id: string; popRank: number } } = {};
@@ -136,10 +140,6 @@ function setupCardPicker() {
   const ayuFunc = getComputedStyle(cardPicker).getPropertyValue("--ayu-func");
 
   function onCardPickerInput(_ev: Event) {
-    let pickerSubmit = document.getElementById(
-      "add-card-submit"
-    ) as HTMLInputElement;
-
     if (currentCardTextIsValid()) {
       pickerSubmit.style.display = "inline-block";
       cardPicker.style.color = ayuFunc;
@@ -161,6 +161,7 @@ function setupCardPicker() {
     windowSearchParams.delete("title");
     windowSearchParams.append("id", nameMap[cardPicker.value].id);
     window.location.search = windowSearchParams.toString();
+    onCardPickerInput(ev);
   }
 
   cardPicker.oninput = onCardPickerInput;
