@@ -51,25 +51,26 @@ export async function updateImages() {
   );
 
   console.log(`downloaded ${imagesDownloaded} image(s)`);
+  if (imagesDownloaded > 0) {
+    await git.commit({
+      fs,
+      dir: ".",
+      message: `Update image cache with ${imagesDownloaded} image(s)`,
+      author: { name: "updater", email: "no-reply@github.com" },
+    });
 
-  await git.commit({
-    fs,
-    dir: ".",
-    message: `Update image cache with ${imagesDownloaded} image(s)`,
-    author: { name: "updater", email: "no-reply@github.com" },
-  });
+    const token = process.env.GITHUB_TOKEN;
+    console.log("pushing update to repo.");
 
-  const token = process.env.GITHUB_TOKEN;
-  console.log("pushing update to repo.");
-
-  let pushResult = await git.push({
-    fs,
-    http,
-    dir: ".",
-    remote: "origin",
-    onAuth: () => ({ username: "github", password: token }),
-  });
-  console.log(pushResult);
+    let pushResult = await git.push({
+      fs,
+      http,
+      dir: ".",
+      remote: "origin",
+      onAuth: () => ({ username: "github", password: token }),
+    });
+    console.log(pushResult);
+  }
 }
 
 if (esMain(import.meta)) {

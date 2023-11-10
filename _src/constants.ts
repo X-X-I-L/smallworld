@@ -1,5 +1,7 @@
 export const CARDINFO_PATH = "_data/CardInfo.json";
 export const VERSION_PATH = "_data/DbVer.json";
+export const BUNDLE_JS_PATH = "_dist/bundle.js";
+export const BUNDLE_CSS_PATH = "_dist/bundle.css";
 export const IMAGES_DIRECTORY = "_images/";
 
 export const REMOTE_CARDINFO_PATH =

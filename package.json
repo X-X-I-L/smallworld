@@ -6,7 +6,7 @@
   "scripts": {
     "develop": "set NODE_ENV=develop && webpack watch --mode development",
     "build": "set NODE_ENV=production && webpack --mode production",
-    "updateCardInfo": "npx tsx _src/updateCardInfo.ts",
+    "updateCardInfo": "set NODE_ENV=production && npx tsx _src/downloadCardInfo.ts && ls -al && webpack --mode production && npx tsx _src/commitCardInfo.ts && npx tsx _src/updateImages.ts",
     "generateDeckPage": "npx tsx _src/createDeckRedirect.ts"
   },
   "scriptComments": {
