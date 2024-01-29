@@ -7,31 +7,20 @@ import esMain from "es-main";
 import Path from "path";
 import { write } from "fs";
 
-async function createDeckRedirect(deckPath: string) {
-  const ci: CardInfo = cardInfo;
+const ci: CardInfo = cardInfo;
 
-  const nameList = Object.entries(ci).map(([id, card]) => {
-    return { id: id, name: card.name };
-  });
-  const searcher = new Searcher(nameList, {
-    keySelector: (x) => x.name,
-  });
+const nameList = Object.entries(ci).map(([id, card]) => {
+  return { id: id, name: card.name };
+});
 
-  const decklist = YAML.parse(await readFile(deckPath, "utf-8")) as string[];
-  console.log("---");
-  const decklistIds = decklist.map((line) => {
-    const bestmatch = searcher.search(line)[0];
-    console.log(`${line} -> ${bestmatch.name}`);
-    return bestmatch.id;
-  });
-  console.log("---");
-
+async function createDeckRedirect(
+  decklistFilename: string,
+  decklistIds: string[]
+) {
   let decklistParams = new URLSearchParams();
   decklistIds.forEach((id) => {
     decklistParams.append("id", id);
   });
-
-  const decklistFilename = Path.basename(deckPath, ".yml");
   decklistParams.set(
     "title",
     `${decklistFilename.replaceAll("_", " ")} — X X I L`
@@ -66,6 +55,39 @@ async function createDeckRedirect(deckPath: string) {
   console.log(`wrote to ${indexPath}`);
 }
 
+async function createDeckRedirectFromFile(deckPath: string) {
+  const searcher = new Searcher(nameList, {
+    keySelector: (x) => x.name,
+  });
+
+  const decklist = YAML.parse(await readFile(deckPath, "utf-8")) as string[];
+  console.log("---");
+  const decklistIds = decklist.map((line) => {
+    const bestmatch = searcher.search(line)[0];
+    console.log(`${line} -> ${bestmatch.name}`);
+    return bestmatch.id;
+  });
+  console.log("---");
+
+  const decklistFilename = Path.basename(deckPath, ".yml");
+  createDeckRedirect(decklistFilename, decklistIds);
+}
+
+async function createDeckRedirectFromURLParams(
+  urlParams: URLSearchParams,
+  filenameToWrite: string
+) {
+  const cardIds = [...new Set(urlParams.getAll("id"))];
+  createDeckRedirect(filenameToWrite, cardIds);
+}
+
 if (esMain(import.meta)) {
-  await createDeckRedirect(process.argv[2]);
+  if (process.argv.length > 2) {
+    createDeckRedirectFromURLParams(
+      new URLSearchParams(process.argv[2]),
+      process.argv[3]
+    );
+  } else {
+    await createDeckRedirectFromFile(process.argv[2]);
+  }
 }
