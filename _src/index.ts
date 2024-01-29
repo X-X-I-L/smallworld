@@ -279,7 +279,7 @@ export function main() {
         centralGravity: 0.01,
         springConstant: 0.08,
         springLength: 70,
-        damping: 0.4,
+        damping: 0.7,
         avoidOverlap: 0.2,
       },
       solver: "forceAtlas2Based",
