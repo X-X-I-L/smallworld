@@ -139,4 +139,4 @@ export interface CardInfoEntry {
   popRank?: number;
 }
 
-export interface CardNode extends CardInfoEntry, Omit<Node, "level"> {}
+export interface CardNode extends CardInfoEntry, Omit<Node, "level"> { }

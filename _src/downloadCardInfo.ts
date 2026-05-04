@@ -27,12 +27,25 @@ export async function downloadCardInfo() {
       return /^(?:normal|effect|ritual)(?:_pendulum)?$/.test(card.frameType);
     })
     .forEach((card) => {
+      let qualified_atk = card.misc_info[0]?.question_atk ? "?" : String(card.atk!);
+      let qualified_def = card.misc_info[0]?.question_def ? "?" : String(card.def!);
+
+      if (
+        card.attribute! == null ||
+        card.race! == null ||
+        qualified_atk == null ||
+        qualified_def == null ||
+        card.level! == null
+      ) {
+        return;
+      }
+
       cardInfo[card.id] = {
         name: card.name,
         attribute: card.attribute!,
-        type: card.race,
-        atk: card.misc_info[0]?.question_atk ? "?" : String(card.atk!),
-        def: card.misc_info[0]?.question_def ? "?" : String(card.def!),
+        type: card.race!,
+        atk: qualified_atk,
+        def: qualified_def,
         level: card.level!,
         popRank: 1e20,
       };
