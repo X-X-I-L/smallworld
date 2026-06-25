@@ -8,10 +8,9 @@ import { capitalize } from "./helpers.js";
 import Awesomplete from "awesomplete";
 import { IdType, network } from "vis-network";
 
-import _css from "../node_modules/awesomplete/awesomplete.css";
-const __css = _css; //some BS to get the CSS loader to build this first so we can style over it with our CSS
+import "awesomplete/awesomplete.css";
 
-import css from "../_css/style.module.scss";
+import * as css from "../_css/style.module.scss";
 console.log(css["ayu-bg"]);
 
 const ci = cardInfo as CardInfo;
@@ -155,11 +154,10 @@ function setupCardPicker() {
       cardPicker.style.color = ayuFg;
     }
 
-    cardPicker.style.width = `${
-      cardPicker.value.length === 0
-        ? cardPicker.placeholder.length
-        : Math.max(6, cardPicker.value.length)
-    }ch`;
+    cardPicker.style.width = `${cardPicker.value.length === 0
+      ? cardPicker.placeholder.length
+      : Math.max(6, cardPicker.value.length)
+      }ch`;
   }
 
   function onCardPickerSubmit(ev: Event) {

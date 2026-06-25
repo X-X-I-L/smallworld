@@ -1,4 +1,4 @@
-import cardInfo from "../_data/CardInfo.json" assert { type: "json" };
+import cardInfo from "../_data/CardInfo.json" with { type: "json" };
 import { CardInfo } from "./cardTypes.js";
 import fs from "fs";
 import Bottleneck from "bottleneck";
@@ -6,7 +6,7 @@ import { IMAGES_DIRECTORY, REMOTE_IMAGES_DIRECTORY } from "./constants.js";
 import axios from "axios";
 import sharp from "sharp";
 import git from "isomorphic-git";
-import http from "isomorphic-git/http/node/index.js";
+import http from "isomorphic-git/http/node";
 import esMain from "es-main";
 
 export async function updateImages() {
@@ -43,7 +43,7 @@ export async function updateImages() {
               imagesDownloaded++;
             })
             .catch((e) => {
-              console.log(`couldn't download image for ${card.name}: ${e}`);
+              console.log(`couldn't download image for ${card.name}: ${e}, ${remotePath}`);
             });
         });
       }

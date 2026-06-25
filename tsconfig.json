@@ -1,9 +1,12 @@
 {
     "compilerOptions": {
         "module": "ESNext",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "target": "es2022",
-        "lib": ["ES2022", "DOM"],
+        "lib": [
+            "ES2022",
+            "DOM"
+        ],
         // "sourceMap": true,
         "strict": true,
         "noImplicitAny": true,
@@ -11,7 +14,13 @@
         "resolveJsonModule": true,
         "allowSyntheticDefaultImports": true,
         "outDir": "_dist/tsc",
-        "plugins": [{ "name": "typescript-plugin-css-modules" }],
+        "plugins": [
+            {
+                "name": "typescript-plugin-css-modules"
+            }
+        ],
     },
-    "include": ["_src/**/*"],
+    "include": [
+        "_src/**/*"
+    ],
 }

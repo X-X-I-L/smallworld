@@ -1,7 +1,7 @@
 import { readFile, writeFile, mkdir } from "fs/promises";
 import { Searcher } from "fast-fuzzy";
 import YAML from "yaml";
-import cardInfo from "../_data/CardInfo.json" assert { type: "json" };
+import cardInfo from "../_data/CardInfo.json" with { type: "json" };
 import { CardInfo } from "./cardTypes.js";
 import esMain from "es-main";
 import Path from "path";

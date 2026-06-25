@@ -1,6 +1,6 @@
 import fs from "fs";
 import git from "isomorphic-git";
-import http from "isomorphic-git/http/node/index.js";
+import http from "isomorphic-git/http/node";
 import esMain from "es-main";
 import { BUNDLE_CSS_PATH, BUNDLE_JS_PATH, CARDINFO_PATH } from "./constants";
 
